@@ -64,6 +64,10 @@ share/python-wheels/
 *.egg
 MANIFEST
 
+# Frontend exception: the Python `lib/` rule above unintentionally hides
+# the TypeScript `src/lib/` directory inside `frontend/`.
+!frontend/src/lib/
+
 # PyInstaller
 *.manifest
 *.spec
