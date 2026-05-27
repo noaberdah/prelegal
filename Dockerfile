@@ -38,6 +38,9 @@ ENV PRELEGAL_DB_PATH=/tmp/prelegal.db \
     PYTHONUNBUFFERED=1 \
     PATH="/app/backend/.venv/bin:$PATH"
 
+# OPENROUTER_API_KEY must be provided at `docker run` time (the start scripts pass it
+# via --env-file). Not baked into the image.
+
 EXPOSE 8000
 
 CMD ["uvicorn", "prelegal.main:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]

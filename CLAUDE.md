@@ -72,11 +72,17 @@ Backend available at http://localhost:8000
 - Start/stop scripts for Mac, Linux, Windows under `scripts/`
 - 15 backend tests covering health, auth flows, and the static mount
 
+### Completed (PL-5)
+- AI chat replaces the static NDA form. Chat panel + live preview side-by-side.
+- `POST /api/chat` (FastAPI router) calls LiteLLM via OpenRouter to the Cerebras-routed `gpt-oss-120b:free` model with a Pydantic structured-output schema (`ChatTurn` with `assistant_message`, `extracted_fields`, `document_ready`).
+- `OPENROUTER_API_KEY` is loaded from the project-root `.env` (via `python-dotenv`); start scripts pass `--env-file` to Docker.
+- 5 new backend tests for chat (stubbing `litellm.completion`) — 20 backend tests total.
+- v1 chat is in-memory only; no auth gate; document persistence is still PL-7 territory.
+
 ### Not Yet Implemented
-- AI chat interface for document drafting (PL-5)
 - Support for the non-NDA document types (PL-6)
 - Frontend auth UI and document persistence (PL-7)
-- `/api/documents/*` and `/api/chat/*` endpoints
+- `/api/documents/*` endpoints
 
 ## Current API Endpoints
 - `GET  /api/health` — Health check
@@ -84,10 +90,11 @@ Backend available at http://localhost:8000
 - `POST /api/auth/signin` — Sign in; sets `prelegal_auth` cookie
 - `POST /api/auth/signout` — Clear auth cookie
 - `GET  /api/auth/me` — Get current user (requires cookie)
+- `POST /api/chat` — Send chat history + current fields, returns `{assistant_message, extracted_fields, document_ready}`. 503 if `OPENROUTER_API_KEY` is unset.
 
-## Current State (as of PL-4 merge)
+## Current State (as of PL-5 merge)
 - Run: `scripts/start-{mac,linux,windows}.{sh,ps1}` — stop with the matching `stop-` script
 - Container `prelegal-app` listens on port 8000
 - SQLite lives at `/tmp/prelegal.db` inside the container; wiped on each start
 - Backend tests: `cd backend && uv run pytest` (or `.\.venv\Scripts\pytest.exe` on Windows)
-- The frontend served at `/` is the Mutual NDA form from PL-3; the chat-based flow described in PL-5/6/7 has not been built yet
+- The frontend served at `/` is the Mutual NDA chat from PL-5; non-NDA documents and auth UI land in PL-6/7

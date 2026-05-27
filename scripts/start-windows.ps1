@@ -15,8 +15,15 @@ Write-Host "Removing any existing container..."
 $existing = docker ps -a --filter "name=^$ContainerName$" --format "{{.ID}}"
 if ($existing) { docker rm -f $ContainerName | Out-Null }
 
+$EnvArgs = @()
+$EnvFile = Join-Path $RootDir ".env"
+if (Test-Path $EnvFile) {
+    $EnvArgs += "--env-file"
+    $EnvArgs += $EnvFile
+}
+
 Write-Host "Starting container..."
-docker run -d --name $ContainerName -p "${Port}:8000" $ImageName | Out-Null
+docker run -d --name $ContainerName -p "${Port}:8000" @EnvArgs $ImageName | Out-Null
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 Write-Host "Prelegal is running at http://localhost:$Port"
