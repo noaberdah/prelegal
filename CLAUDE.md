@@ -8,7 +8,7 @@ The available documents are covered in the catalog.json file in the project root
 
 @catalog.json
 
-The current implementation supports all 11 document types via AI chat with full user authentication and document persistence.
+The current implementation is a Mutual NDA form prototype on the frontend with an auth backend in place. AI chat, the remaining document types, and document persistence are not yet implemented.
 
 ## Development process
 
@@ -56,50 +56,38 @@ Backend available at http://localhost:8000
 
 ## Implementation Status
 
+### Completed (PL-2)
+- Common Paper legal templates added under `templates/`
+- All 11 document types referenced in `catalog.json`
+
+### Completed (PL-3)
+- Next.js frontend prototype under `frontend/`
+- Mutual NDA form page with field inputs, live preview, and PDF download
+
 ### Completed (PL-4)
-- Docker multi-stage build (Node frontend + Python backend)
-- FastAPI backend with SQLite (fresh DB each container start)
-- Next.js static export served by FastAPI at localhost:8000
-- Auth routes: POST /api/auth/signup, POST /api/auth/signin, POST /api/auth/signout, GET /api/auth/me
-- Start/stop scripts for Mac, Linux, Windows
-- Mutual NDA form with live preview and PDF download
+- Multi-stage Dockerfile (Node builds the Next.js static export, Python serves it)
+- FastAPI backend (uv project) with SQLite recreated on every container start
+- `users` table; auth routes (signup, signin, signout, me) using bcrypt + JWT in an HttpOnly cookie
+- Next.js static export served by FastAPI at `http://localhost:8000`
+- Start/stop scripts for Mac, Linux, Windows under `scripts/`
+- 15 backend tests covering health, auth flows, and the static mount
 
-### Completed (PL-5)
-- AI chat interface replaces manual form for NDA creation
-- Uses LiteLLM via OpenRouter with Cerebras inference (gpt-oss-120b model)
-- Structured outputs for reliable field extraction from conversation
-- Live preview updates as AI extracts fields from chat
-- AI greets user, asks questions conversationally, and confirms when complete
-- Download button appears when all required fields are gathered
+### Not Yet Implemented
+- AI chat interface for document drafting (PL-5)
+- Support for the non-NDA document types (PL-6)
+- Frontend auth UI and document persistence (PL-7)
+- `/api/documents/*` and `/api/chat/*` endpoints
 
-### Completed (PL-6)
-- Support for all 11 document types from catalog.json
-- AI detects document type from user requests and routes accordingly
-- Dedicated preview/PDF components for Mutual NDA, Cloud Service Agreement, Pilot Agreement
-- Generic preview/PDF components for remaining document types (Design Partner, SLA, Professional Services, Partnership, Software License, DPA, BAA, AI Addendum)
-- Auto-focus chat input after sending messages
-- AI always asks follow-on questions when more information is needed
+## Current API Endpoints
+- `GET  /api/health` — Health check
+- `POST /api/auth/signup` — Create user; sets `prelegal_auth` cookie
+- `POST /api/auth/signin` — Sign in; sets `prelegal_auth` cookie
+- `POST /api/auth/signout` — Clear auth cookie
+- `GET  /api/auth/me` — Get current user (requires cookie)
 
-### Completed (PL-7)
-- Functional user authentication with JWT tokens in HttpOnly cookies
-- User signup and signin with email/password (bcrypt password hashing)
-- Document persistence - users can save documents to their account
-- My Documents modal to view, load, and delete saved documents
-- User menu with sign out functionality
-- New Document button to start fresh
-- Auth context for managing user state across the app
-- Protected document save/load endpoints
-
-### Current API Endpoints
-- `POST /api/auth/signup` - Create new user account
-- `POST /api/auth/signin` - Sign in and receive JWT cookie
-- `POST /api/auth/signout` - Clear auth cookie
-- `GET /api/auth/me` - Get current user info
-- `GET /api/documents` - List user's saved documents (auth required)
-- `POST /api/documents` - Save new document (auth required)
-- `GET /api/documents/{id}` - Get specific document (auth required)
-- `PUT /api/documents/{id}` - Update document (auth required)
-- `DELETE /api/documents/{id}` - Delete document (auth required)
-- `GET /api/chat/greeting` - Get AI greeting
-- `POST /api/chat/message` - Send chat message and get AI response
-- `GET /api/health` - Health check
+## Current State (as of PL-4 merge)
+- Run: `scripts/start-{mac,linux,windows}.{sh,ps1}` — stop with the matching `stop-` script
+- Container `prelegal-app` listens on port 8000
+- SQLite lives at `/tmp/prelegal.db` inside the container; wiped on each start
+- Backend tests: `cd backend && uv run pytest` (or `.\.venv\Scripts\pytest.exe` on Windows)
+- The frontend served at `/` is the Mutual NDA form from PL-3; the chat-based flow described in PL-5/6/7 has not been built yet
