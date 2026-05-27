@@ -12,7 +12,8 @@ docker build -t $ImageName .
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 Write-Host "Removing any existing container..."
-docker rm -f $ContainerName 2>$null | Out-Null
+$existing = docker ps -a --filter "name=^$ContainerName$" --format "{{.ID}}"
+if ($existing) { docker rm -f $ContainerName | Out-Null }
 
 Write-Host "Starting container..."
 docker run -d --name $ContainerName -p "${Port}:8000" $ImageName | Out-Null
