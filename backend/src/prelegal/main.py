@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from .auth import router as auth_router
+from .chat import router as chat_router
 from .config import load_settings
 from .db import reset_database
 
@@ -30,6 +31,7 @@ def create_app() -> FastAPI:
         return {"status": "ok"}
 
     app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
+    app.include_router(chat_router, prefix="/api/chat", tags=["chat"])
 
     if settings.static_dir and Path(settings.static_dir).is_dir():
         app.mount(

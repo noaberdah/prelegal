@@ -3,10 +3,18 @@ import os
 import secrets
 import tempfile
 from dataclasses import dataclass
+from pathlib import Path
+
+from dotenv import load_dotenv
 
 
 def _default_db_path() -> str:
     return os.path.join(tempfile.gettempdir(), "prelegal.db")
+
+
+# Load .env from the project root (two levels up from this file: backend/src/prelegal -> project root).
+# override=False so explicit shell/Docker env wins over the file.
+load_dotenv(Path(__file__).resolve().parents[3] / ".env", override=False)
 
 
 @dataclass(frozen=True)
@@ -18,6 +26,7 @@ class Settings:
     auth_cookie_name: str
     static_dir: str | None
     cookie_secure: bool
+    openrouter_api_key: str | None
 
 
 @functools.lru_cache(maxsize=1)
@@ -31,4 +40,5 @@ def load_settings() -> Settings:
         auth_cookie_name="prelegal_auth",
         static_dir=static_dir,
         cookie_secure=os.environ.get("PRELEGAL_COOKIE_SECURE", "false").lower() == "true",
+        openrouter_api_key=os.environ.get("OPENROUTER_API_KEY") or None,
     )
