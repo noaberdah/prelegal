@@ -8,7 +8,7 @@ The available documents are covered in the catalog.json file in the project root
 
 @catalog.json
 
-The current implementation is a Mutual NDA form prototype on the frontend with an auth backend in place. AI chat, the remaining document types, and document persistence are not yet implemented.
+The current implementation is an AI-chat-driven Mutual NDA drafter (frontend chat + live preview, backend LLM endpoint, auth routes). The remaining document types and document/chat persistence are not yet implemented.
 
 ## Development process
 
@@ -78,6 +78,8 @@ Backend available at http://localhost:8000
 - `OPENROUTER_API_KEY` is loaded from the project-root `.env` (via `python-dotenv`); start scripts pass `--env-file` to Docker.
 - 5 new backend tests for chat (stubbing `litellm.completion`) — 20 backend tests total.
 - v1 chat is in-memory only; no auth gate; document persistence is still PL-7 territory.
+- Verified end-to-end against live OpenRouter: the AI extracts multiple fields from a batched user reply and asks coherent follow-ups.
+- Gotcha: OpenRouter rejects `reasoning_effort` by default — `litellm.completion` must be called with `allowed_openai_params=["reasoning_effort"]` to forward it through to Cerebras.
 
 ### Not Yet Implemented
 - Support for the non-NDA document types (PL-6)
