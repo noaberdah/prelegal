@@ -111,6 +111,7 @@ def chat(body: ChatRequest, request: Request) -> ChatTurn:
             messages=_build_messages(body),
             response_format=ChatTurn,
             reasoning_effort="low",
+            allowed_openai_params=["reasoning_effort"],
             extra_body=EXTRA_BODY,
             api_key=settings.openrouter_api_key,
         )
