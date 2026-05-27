@@ -12,7 +12,7 @@ Desktop.ini
 *.sublime-workspace
 
 # ---------- Claude Code / AI tooling ----------
-.claude/
+.claude/settings.local.json
 .aider*
 .cursor/
 
